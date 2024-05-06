@@ -28,7 +28,7 @@ point3d simple_block::get_node_position(uint i, uint j, uint k) const
         return point3d(0,0,0);
     }
 
-    return point3d( i*dx, j*dy, k*dz );
+    return point3d( i*dx + x_min, j*dy + y_min, k*dz + z_min );
 }
 point3d simple_block::get_cell_position(uint i, uint j, uint k) const
 {
@@ -38,7 +38,7 @@ point3d simple_block::get_cell_position(uint i, uint j, uint k) const
         return point3d(0,0,0);
     }
 
-    return point3d( i*dx + dx/2, j*dy + dy/2, k*dz + dz/2 );
+    return point3d( i*dx + dx/2 + x_min, j*dy + dy/2 + y_min, k*dz + dz/2 + z_min);
 }
 void simple_block::create_block(division x, division y, division z)
 {
@@ -60,15 +60,22 @@ void simple_block::create_block(division x, division y, division z)
 
 
 // Transformed block
-transformed_block::transformed_block()
-{}
+transformed_block::transformed_block(){}
 transformed_block::~transformed_block(){}
 
-void transformed_block::set_transformation(transformation* T) {trans = T;}
+void transformed_block::add_transformation(transformation* T) {trans.push_back(T);}
 
 double transformed_block::get_volume(uint i, uint j, uint k) const 
 {
-    return trans->jacobian(get_cell_position(i,j,k))*dx*dy*dz;
+    double J = 1;
+    point3d point( i*dx + dx/2 + x_min, j*dy + dy/2 + y_min, k*dz + dz/2 + z_min);
+
+    for(auto const& T : trans) {
+        J *= T->jacobian(point);
+        point = T->get_point(point);
+    }
+
+    return J*dx*dy*dz;
 }
 point3ui transformed_block::get_size() const {return point3ui(nx,ny,nz);}
 
@@ -80,7 +87,11 @@ point3d transformed_block::get_node_position(uint i, uint j, uint k) const
         return point3d(0,0,0);
     }
 
-    return trans->get_point(point3d( i*dx, j*dy, k*dz ));
+    point3d point( i*dx + x_min, j*dy + y_min, k*dz + z_min );
+
+    for(auto const& T : trans) {point = T->get_point(point);}
+
+    return point;
 }
 point3d transformed_block::get_cell_position(uint i, uint j, uint k) const 
 {
@@ -90,6 +101,10 @@ point3d transformed_block::get_cell_position(uint i, uint j, uint k) const
         return point3d(0,0,0);
     }
 
-    return trans->get_point(point3d( i*dx + dx/2, j*dy + dy/2, k*dz + dz/2 ));
+    point3d point( i*dx + dx/2 + x_min, j*dy + dy/2 + y_min, k*dz + dz/2 + z_min);
+
+    for(auto const& T : trans) {point = T->get_point(point);}
+
+    return point;
 }
 

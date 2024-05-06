@@ -71,17 +71,26 @@ class simple_block : public mesh_base
 // Transformed block class
 class transformed_block : public simple_block
 {
-    
     public:
     // Transformation
-    transformation* trans;
+    std::vector<transformation*> trans;
 
     transformed_block();
     ~transformed_block();
 
-    void set_transformation(transformation* T);
+    void add_transformation(transformation* T);
+
     double get_volume(uint i, uint j, uint k) const;
     point3ui get_size() const;
     point3d get_node_position(uint i, uint j, uint k) const;
     point3d get_cell_position(uint i, uint j, uint k) const;
+};
+
+
+// Mesh of multiple blocks
+class multi_block
+{
+    std::vector<mesh_base*> blocks;
+
+    
 };

@@ -26,7 +26,23 @@ point3d operator*(const transformation_matrix& T, const point3d& point);
 
 // Nonlinear transformations
 
+namespace nonlinear_transformations
+{
+    namespace exponential_scaling
+    {
+        point3d transformed_point(const point3d& point,const point3d& end_point,const point3d& direction);
+        double jacobian(const point3d& point);
+    };
 
+    namespace cylindrical_transformation
+    {
+        point3d transformed_point(const point3d& point, double alpha, double r);
+        double jacobian(const point3d& point);
+    };    
+};
+
+
+// Transformation objects
 
 struct transformation
 {
@@ -55,7 +71,7 @@ struct nonlinear_transformation : public transformation
     double(*jacob)(const point3d& point);
 
     public:
-    nonlinear_transformation(point3d(*trans)(const point3d& point),double(*jacob)(const point3d& point));
+    nonlinear_transformation(point3d(*point_transformation)(const point3d& point),double(*jacobian)(const point3d& point));
 
     point3d get_point(const point3d& point) const;
     double jacobian(const point3d& point) const;
