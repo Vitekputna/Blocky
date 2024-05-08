@@ -32,3 +32,38 @@ std::ostream& operator<<(std::ostream& out, const point3<T>& point)
 
 typedef point3<double> point3d;
 typedef point3<uint> point3ui;
+
+template<typename T,int N>
+struct list{
+    T nodes[N];
+    list(){}
+};
+
+template<typename T, int N>
+std::ostream& operator<<(std::ostream& out, const list<T,N>& list)
+{
+    for (int i = 0; i < N; ++i) {
+        out << list.nodes[i] << " ";
+    }
+    return out;
+}
+
+struct node{
+    point3d position;
+    node(point3d point) : position(point) {}
+};
+
+struct face{
+    double face_size;
+    point3d position;
+    point3d normal;
+    list<uint,4> face_vertices;
+    face(){}
+};
+
+struct cell{
+    point3d position;
+    double volume;
+    list<uint,8> cell_vertices;
+    cell(){}
+};

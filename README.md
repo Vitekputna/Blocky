@@ -1,1 +1,3 @@
-# BlockMesh library
+# Blocky
+Blocky is a C++ library for representing structured multiblock meshes for numerical computation.
+It is currently in development...
